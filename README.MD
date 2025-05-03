@@ -2,6 +2,9 @@
 
 Um sistema de chat para usuários se comunicarem em tempo real e um chat bot para fazerem perguntas relacionadas a Counter Strike. O site é responsivo e funcionara em qualquer dispositivo. O projeto foi desenvolvido utilizando Django, com integração de websockets para mensagens instantâneas.
 
+**https://furia-chatroom-bot.onrender.com/**<br>
+OBS: por eu estar usando a versão gratuita do render, não foi possivel trabalhar com imagens, e teve algumas limitações, caso queira a experiencia completa, recomendado clonar o repositorio, [Clique aqui para visualizar como clonar e rodar este projeto](#como-rodar-o-projeto)
+
 ## Tecnologias Principais usadas
 
 Aqui estão as tecnologias usadas neste projeto:
