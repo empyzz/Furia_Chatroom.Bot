@@ -58,9 +58,11 @@
               <div tabindex="0" role="button" class="btn btn-circle avatar w-12">
                 <div class="w-12 rounded-full ">
                   <div class="avatar">
-                      <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png{% endif %}"
-                           class="{% if not user.profile_image %}w-full scale-75{% endif %}"
-                           alt="foto">
+                    <img
+                      src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png{% endif %}"
+                      onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png';"
+                      class="{% if not user.profile_image %}w-full scale-75{% endif %}"
+                      alt="foto">
                   </div>
                 </div>
               </div>
