@@ -22,6 +22,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         exists = await self.room_exists()
         if not exists:
+            await self.send(text_data=json.dumps({
+                'error': 'Sala não encontrada.'
+            }))
             await self.close()
             return
 
@@ -58,7 +61,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             saved_message = await self.save_public_message(message)
 
             if not saved_message:
-                await self.send(text_data=json.dumps({'error': 'Falha ao salvar a mensagem.'}))
+                await self.send(text_data=json.dumps({
+                    'error': 'Falha ao salvar a mensagem.'
+                }))
                 return
 
             await self.channel_layer.group_send(
@@ -76,7 +81,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             traceback.print_exc()
             await self.close()
-
         if not saved_message:
             await self.send(text_data=json.dumps({
                 'error': 'Erro ao salvar a mensagem. Sala não encontrada.'

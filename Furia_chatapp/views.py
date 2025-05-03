@@ -22,7 +22,8 @@ def home(request):
 
 
 def profile(request):
-    return render(request, 'profile.html')
+    user = request.user
+    return render(request, 'profile.html', {'user': user})
 
 
 @csrf_exempt

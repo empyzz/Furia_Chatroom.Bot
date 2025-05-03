@@ -16,11 +16,9 @@
     <!-- Conteúdo centralizado -->
     <div class="bg-base-100 p-6 rounded-lg shadow-lg w-full max-w-lg">
       <div class="flex items-center space-x-4 mb-6">
-        <!-- Foto de perfil com hover removido temporariamente -->
         <div class="relative w-24 h-24">
-          <img src="{{ user.profile_image.url }}" alt="Foto de perfil" id="profile-image"
-               class="w-full h-full rounded-full border-2 border-primary object-cover cursor-pointer" />
-
+          <img src="{{ user.profile_image.url if user.profile_image else '/static/default-profile.png' }}" alt="Foto de perfil" id="profile-image"
+          class="w-full h-full rounded-full border-2 border-primary object-cover cursor-pointer" />     
         </div>
 
         <div class="flex flex-col">
