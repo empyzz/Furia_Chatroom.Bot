@@ -81,7 +81,7 @@ _Perguntas predefinidas para o usuário selecionar e o bot irá responder._
 _Pagina para edição de perfil do usuário podendo mudar sua foto de perfil, nome, e alterar sua senha_
 
 
-## 🚀 Como Rodar o Projeto
+## Como Rodar o Projeto
 
 ### ✅ Pré-requisitos
 
