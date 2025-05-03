@@ -21,35 +21,35 @@
             <img src="{{ user.profile_image.url }}" id="profile-image"
                  alt="Foto de perfil"
                  onerror="this.onerror=null; this.src='{% static 'defaultuser.png' %}'"
-                 class="w-full h-full object-cover rounded-full transition duration-300 group-hover:brightness-75" />
+                 class="w-full h-full object-cover transition duration-300 group-hover:brightness-75" />
           {% else %}
-            <img src="{% static 'defaultuser.png' %}" id="profile-image"
-                 alt="Foto padrão"
-                 class="w-full h-full object-cover rounded-full transition duration-300 group-hover:brightness-75" />
+          <img src="{% if message.user.profile_image %}{{ message.user.profile_image.url }}{% else %}https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png{% endif %}"
+          class="{% if not message.user.profile_image %}w-full scale-75{% endif %}"
+          alt="foto">
           {% endif %}
-        
-          <!-- Overlay opcional com ícone -->
+
           <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
-            <div class="text-white text-sm font-semibold bg-opacity-50 rounded-full px-2 py-1">
+            <div class="text-white text-sm font-semibold bg-opacity-70 bg-black rounded-full px-2 py-1 shadow-lg">
               Mudar Foto
             </div>
           </div>
         </div>
-
+  
         <div class="flex flex-col">
-            <div class="flex items-center space-x-2">
-              <h2 class="text-2xl font-semibold text-base-content">{{ user.username }}</h2>
-              <button id="open-change-name-modal" class="text-sm text-primary hover:underline">Alterar Nome</button>
-            </div>
-            <p class="text-sm text-base-content/80">{{ user.email }}</p>
+          <div class="flex items-center space-x-2">
+            <h2 class="text-2xl font-semibold text-base-content">{{ user.username }}</h2>
+            <button id="open-change-name-modal" class="text-sm text-primary hover:underline">Alterar Nome</button>
           </div>
+          <p class="text-sm text-base-content/80">{{ user.email }}</p>
+        </div>
       </div>
-
+  
       <div class="space-y-4">
         <button id="open-change-password-modal" class="btn btn-primary w-full sm:w-auto">Alterar Senha</button>
       </div>
     </div>
   </div>
+  
 
   <!-- Input de imagem oculto -->
   <input type="file" id="image-input" class="hidden" accept="image/*" />
@@ -69,7 +69,7 @@
     </div>
   </div>
 
-
+  <!-- Modal de Alteração de nome -->
   <input type="checkbox" id="modal-change-name" class="modal-toggle" />
   <div class="modal">
     <div class="modal-box">
@@ -89,7 +89,7 @@
   </div>
   
     <!-- Modal de Alteração de Senha -->
-    <input type="checkbox" id="image-modal" class="modal-toggle" onchange="handleModalClose()" />
+    <input type="checkbox" id="image-modal-password" class="modal-toggle" onchange="handleModalClose()" />
     <div class="modal">
       <div class="modal-box">
         <h2 class="text-xl font-semibold mb-4">Alterar Senha</h2>
@@ -100,11 +100,11 @@
           <input type="password" name="new_password2" placeholder="Confirmar nova senha" class="input input-bordered w-full mb-4" required />
           <div class="flex justify-end space-x-2">
             <button type="submit" class="btn btn-primary">Salvar</button>
-            <label for="modal-change-password" class="btn">Cancelar</label>
+            <label for="image-modal-password" class="btn">Cancelar</label>
           </div>
         </form>
         <div id="password-error-alert" class="alert alert-error mb-4 mt-4 hidden">
-            <span id="password-error-message">Erro ao alterar a senha.</span>
+          <span id="password-error-message">Erro ao alterar a senha.</span>
         </div>
       </div>
     </div>
@@ -206,82 +206,99 @@
     });
   
     document.getElementById('open-change-password-modal').addEventListener('click', () => {
-      document.getElementById('modal-change-password').checked = true;
+      document.getElementById('image-modal-password').checked = true;
     });
   
     // Alterar nome AJAX
     document.getElementById('form-change-name').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const nome = document.getElementById('novo-nome').value;
-
-    fetch("{% url 'change_name' %}", {
+      e.preventDefault();
+      const nome = document.getElementById('novo-nome').value;
+  
+      fetch("{% url 'change_name' %}", {
         method: 'POST',
         headers: {
-        'X-CSRFToken': '{{ csrf_token }}',
-        'Content-Type': 'application/x-www-form-urlencoded'
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: `nome=${encodeURIComponent(nome)}`
-    })
-    .then(res => res.json())
-    .then(data => {
+      })
+      .then(res => res.json())
+      .then(data => {
         const errorAlert = document.getElementById('name-error-alert');
         const errorMsg = document.getElementById('name-error-message');
-
+  
         if (data.status === 'ok') {
-        document.querySelector('h2').innerText = data.novo_nome;
-        document.getElementById('modal-change-name').checked = false;
-        document.getElementById('form-change-name').reset();
-
-        showSuccessToast('Nome alterado com sucesso!');
+          document.querySelector('h2').innerText = data.novo_nome;
+          document.getElementById('modal-change-name').checked = false;
+          document.getElementById('form-change-name').reset();
+          showSuccessToast('Nome alterado com sucesso!');
         } else if (data.message) {
-        errorMsg.innerText = data.message;
-        errorAlert.classList.remove('hidden');
+          errorMsg.innerText = data.message;
+          errorAlert.classList.remove('hidden');
         }
-        });
+      });
     });
   
     // Alterar senha AJAX
     document.getElementById('form-change-password').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-
-    fetch("{% url 'change_password' %}", {
+      e.preventDefault();
+      const formData = new FormData(this);
+  
+      const saveButton = this.querySelector('button[type="submit"]');
+      saveButton.innerHTML = 'Carregando...';
+      saveButton.disabled = true;
+  
+      fetch("{% url 'change_password' %}", {
         method: 'POST',
         headers: { 'X-CSRFToken': '{{ csrf_token }}' },
         body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
+      })
+      .then(res => res.json())
+      .then(data => {
         const errorAlertPass = document.getElementById('password-error-alert');
         const errorPass = document.getElementById('password-error-message');
-
+  
         if (data.status === 'ok') {
-        document.getElementById('modal-change-password').checked = false;
-        this.reset();
-        showSuccessToast('Senha alterada com sucesso!');
+          document.getElementById('image-modal-password').checked = false;
+          document.getElementById('form-change-password').reset();
+          showSuccessToast('Senha alterada com sucesso!');
         } else if (data.errors) {
-        // Pega a primeira mensagem de erro do objeto
-        const firstErrorField = Object.keys(data.errors)[0];
-        const firstErrorMsg = data.errors[firstErrorField][0];
-
-        errorPass.innerText = firstErrorMsg;
-        errorAlertPass.classList.remove('hidden');
+          const firstErrorField = Object.keys(data.errors)[0];
+          const firstErrorMsg = data.errors[firstErrorField][0];
+          errorPass.innerText = firstErrorMsg;
+          errorAlertPass.classList.remove('hidden');
+        } else if (data.message) {
+          errorPass.innerText = data.message;
+          errorAlertPass.classList.remove('hidden');
         }
+  
+        saveButton.innerHTML = 'Salvar';
+        saveButton.disabled = false;
+      })
+      .catch(error => {
+        console.error("Erro ao alterar senha:", error);
+        saveButton.innerHTML = 'Salvar';
+        saveButton.disabled = false;
+        alert('Erro ao alterar a senha, tente novamente!');
+      });
     });
-    });
-
-  </script>
-
-  <script>
+  
+    function handleModalClose() {
+      const modal = document.getElementById('image-modal-password');
+      if (!modal.checked) {
+        document.getElementById('password-error-alert').classList.add('hidden');
+      }
+    }
+  
     function showSuccessToast(message) {
-    const toast = document.getElementById('alert-success');
-    const msg = document.getElementById('alert-success-msg');
-    msg.innerText = message;
-    toast.classList.remove('hidden');
-
-    setTimeout(() => {
+      const toast = document.getElementById('alert-success');
+      const msg = document.getElementById('alert-success-msg');
+      msg.innerText = message;
+      toast.classList.remove('hidden');
+  
+      setTimeout(() => {
         toast.classList.add('hidden');
-    }, 4000);
+      }, 4000);
     }
   </script>
 {% endblock %}

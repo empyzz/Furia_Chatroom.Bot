@@ -54,21 +54,22 @@
         <div class="flex-none p-2 w-24">
           {% if user.is_authenticated %}
             <!-- Dropdown com avatar -->
-            <div class="dropdown dropdown-end">
-              <div tabindex="0" role="button" class="btn btn-circle avatar">
-                <div class="w-12 rounded-full">
-                  {% if user.profile_image %}
-                  <img src="{{ user.profile_image.url }}" alt="Foto de perfil">
-                  {% else %}
-                    <img src="{% static 'defaultuser.png' %}" alt="Foto padrão" style="width: 100%; scale: 0.75;">
-                  {% endif %}
+            <div class="dropdown dropdown-bottom dropdown-end">
+              <div tabindex="0" role="button" class="btn btn-circle avatar w-12">
+                <div class="w-12 rounded-full ">
+                  <div class="avatar">
+                      <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png{% endif %}"
+                           class="{% if not user.profile_image %}w-full scale-75{% endif %}"
+                           alt="foto">
+                  </div>
                 </div>
               </div>
-              <ul class="dropdown-content menu bg-base-200 rounded-box z-10 w-52 mt-2 p-2 shadow-lg">
+              <ul class="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow-sm mt-2">
                 <li><a href="{% url 'profile' %}">{{ user.username }}</a></li>
                 <li><a href="{% url 'account_logout' %}" class="text-error">Logout</a></li>
               </ul>
             </div>
+            
           {% else %}
             <!-- Botão de login quando não autenticado -->
             <a href="{% url 'account_login' %}" class="btn btn-soft btn-info">Login</a>
