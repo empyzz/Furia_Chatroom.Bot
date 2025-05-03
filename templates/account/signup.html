@@ -1,0 +1,151 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% load allauth account %}
+{% load static %}
+
+
+{% block content %}
+<script src="{% static 'js/cropper.js' %}"></script> 
+
+<div class="flex justify-center items-center min-h-screen">
+  <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 mx-auto shadow-md">
+    <legend class="fieldset-legend text-lg font-semibold text-center">
+      <img src="https://furiagg.fbitsstatic.net/sf/img/logo-furia.svg?theme=main&v=202503171541" class="w-20 mx-auto mb-2">
+      <img src="{% static 'badfallen.png' %}" class="w-14 mx-auto">
+    </legend>
+
+    <form method="POST" action="{% url 'account_signup' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <label for="id_username" class="label mt-2">Usuário</label>
+      <input
+        type="text"
+        name="username"
+        id="id_username"
+        class="input w-full"
+        placeholder="Digite seu nome de usuário"
+        value="{{ form.username.value|default_if_none:'' }}"
+        required
+        autocomplete="username"
+      />
+
+      <label for="id_email" class="label mt-2">Email</label>
+      <input
+        type="email"
+        name="email"
+        id="id_email"
+        class="input w-full"
+        placeholder="Digite seu email"
+        value="{{ form.email.value|default_if_none:'' }}"
+        required
+        autocomplete="email"
+      />
+
+      <label for="id_password1" class="label mt-2">Senha</label>
+      <input
+        type="password"
+        name="password1"
+        id="id_password1"
+        class="input w-full"
+        placeholder="Digite sua senha"
+        required
+        autocomplete="new-password"
+      />
+
+      <label for="id_password2" class="label mt-2">Confirmar senha</label>
+      <input
+        type="password"
+        name="password2"
+        id="id_password2"
+        class="input w-full"
+        placeholder="Confirme sua senha"
+        required
+        autocomplete="new-password"
+      />
+
+      <label for="id_profile_image" class="label mt-2">Foto de perfil</label>
+      <input
+        type="file"
+        name="profile_image"
+        id="id_profile_image"
+        accept="image/*"
+        class="file-input w-full"
+      />
+
+      <div class="mt-2">
+        <img id="cropper-preview" class="max-h-48 mx-auto rounded-lg shadow" style="display:none;">
+      </div>
+      
+      <input type="hidden" name="cropped_image" id="cropped_image_input">
+
+      {% if form.errors %}
+        <div class="text-red-500 text-sm mt-2">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-success mt-4 w-full">Cadastrar</button>
+    </form>
+
+    <div class="mt-4 text-center">
+      <a href="{% url 'account_login' %}" class="text-blue-500 hover:underline">Já tem uma conta? Faça login</a>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="{% url 'home' %}" class="text-blue-500 hover:underline">Entrar sem conta</a>
+    </div>
+  </fieldset>
+</div>
+
+
+<script>
+  let cropper;
+  const imageInput = document.getElementById('id_profile_image');
+  const previewImage = document.getElementById('cropper-preview');
+  const croppedImageInput = document.getElementById('cropped_image_input');
+
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      previewImage.src = reader.result;
+      previewImage.style.display = 'block';
+
+      // Destroi o cropper anterior se existir
+      if (cropper) {
+        cropper.destroy();
+      }
+
+      cropper = new Cropper(previewImage, {
+        aspectRatio: 1,
+        viewMode: 1,
+        autoCropArea: 1,
+        cropend: function () {
+          const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300
+          });
+          canvas.toBlob(function (blob) {
+            const newFile = new File([blob], "profile.jpg", { type: "image/jpeg" });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(newFile);
+            imageInput.files = dataTransfer.files;
+          });
+        }
+      });
+    };
+
+    reader.readAsDataURL(file);
+  });
+</script>
+
+{% endblock %}

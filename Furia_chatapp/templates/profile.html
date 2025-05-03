@@ -1,0 +1,274 @@
+{% extends "main.html" %}
+{% load static %}
+{% load chat_tags %}
+
+{% block content %}
+    <div id="alert-success" class="toast toast-top toast-center hidden z-50">
+        <div class="alert alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        <span id="alert-success-msg">Operação realizada com sucesso!</span>
+        </div>
+    </div>
+  <!-- Container da página -->
+  <div class="bg-base-200 flex items-center justify-center py-12 px-4" style="min-height: calc(100vh - 4rem);">
+    <!-- Conteúdo centralizado -->
+    <div class="bg-base-100 p-6 rounded-lg shadow-lg w-full max-w-lg">
+      <div class="flex items-center space-x-4 mb-6">
+        <!-- Foto de perfil com hover removido temporariamente -->
+        <div class="relative w-24 h-24">
+          <img src="{{ user.profile_image.url }}" alt="Foto de perfil" id="profile-image"
+               class="w-full h-full rounded-full border-2 border-primary object-cover cursor-pointer" />
+
+        </div>
+
+        <div class="flex flex-col">
+            <div class="flex items-center space-x-2">
+              <h2 class="text-2xl font-semibold text-base-content">{{ user.username }}</h2>
+              <button id="open-change-name-modal" class="text-sm text-primary hover:underline">Alterar Nome</button>
+            </div>
+            <p class="text-sm text-base-content/80">{{ user.email }}</p>
+          </div>
+      </div>
+
+      <div class="space-y-4">
+        <button id="open-change-password-modal" class="btn btn-primary w-full sm:w-auto">Alterar Senha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input de imagem oculto -->
+  <input type="file" id="image-input" class="hidden" accept="image/*" />
+
+  <!-- Modal DaisyUI -->
+  <input type="checkbox" id="image-modal" class="modal-toggle" />
+  <div class="modal">
+    <div class="modal-box relative">
+      <h2 class="font-bold text-lg">Escolha e Edite sua Nova Foto</h2>
+      <div class="mt-4">
+        <img id="cropper-preview" src="" alt="Imagem para cortar" class="w-full h-auto rounded-lg" />
+      </div>
+      <div class="modal-action">
+        <label for="image-modal" class="btn btn-secondary">Cancelar</label>
+        <button class="btn btn-primary" id="save-btn">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <input type="checkbox" id="modal-change-name" class="modal-toggle" />
+  <div class="modal">
+    <div class="modal-box">
+      <h2 class="text-xl font-semibold mb-4">Alterar Nome</h2>
+      <form id="form-change-name" method="POST">
+        {% csrf_token %}
+        <input type="text" id="novo-nome" name="nome" placeholder="Novo nome" class="input input-bordered w-full mb-4" required />
+        <div class="flex justify-end space-x-2">
+          <button type="submit" id="btn-save-name" class="btn btn-primary">Salvar</button>
+          <label for="modal-change-name" class="btn">Cancelar</label>
+        </div>
+      </form>
+      <div id="name-error-alert" class="alert alert-error mb-4 mt-4 hidden">
+        <span id="name-error-message">Erro ao alterar nome.</span>
+      </div>
+    </div>
+  </div>
+  
+    <!-- Modal de Alteração de Senha -->
+    <input type="checkbox" id="image-modal" class="modal-toggle" onchange="handleModalClose()" />
+    <div class="modal">
+      <div class="modal-box">
+        <h2 class="text-xl font-semibold mb-4">Alterar Senha</h2>
+        <form id="form-change-password" method="POST">
+          {% csrf_token %}
+          <input type="password" name="old_password" placeholder="Senha atual" class="input input-bordered w-full mb-2" required />
+          <input type="password" name="new_password1" placeholder="Nova senha" class="input input-bordered w-full mb-2" required />
+          <input type="password" name="new_password2" placeholder="Confirmar nova senha" class="input input-bordered w-full mb-4" required />
+          <div class="flex justify-end space-x-2">
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <label for="modal-change-password" class="btn">Cancelar</label>
+          </div>
+        </form>
+        <div id="password-error-alert" class="alert alert-error mb-4 mt-4 hidden">
+            <span id="password-error-message">Erro ao alterar a senha.</span>
+        </div>
+      </div>
+    </div>
+
+
+  <!-- CropperJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet" />
+
+  <script>
+    let cropper;
+    const imageInput = document.getElementById('image-input');
+    const previewImage = document.getElementById('cropper-preview');
+    const imageModalCheckbox = document.getElementById('image-modal');
+    const cancelButton = document.getElementById('cancel-btn');
+    const saveButton = document.getElementById('save-btn');
+    const profileImage = document.getElementById('profile-image');
+
+    profileImage.addEventListener('click', () => {
+      console.log("Imagem de perfil clicada");
+      imageInput.click();
+    });
+  
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+  
+      const reader = new FileReader();
+      reader.onload = () => {
+        previewImage.src = reader.result;
+        previewImage.onload = () => {
+          if (cropper) cropper.destroy();
+  
+          cropper = new Cropper(previewImage, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+          });
+
+          console.log("Abrindo modal");
+          imageModalCheckbox.checked = true;
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function handleModalClose() {
+    if (!imageModalCheckbox.checked && cropper) {
+        cropper.destroy();
+        cropper = null;
+        }
+    }
+    saveButton.addEventListener('click', () => {
+  if (!cropper) return;
+
+  saveButton.innerHTML = 'Carregando...';
+  saveButton.disabled = true;
+
+  const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+
+  canvas.toBlob(blob => {
+    const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
+    const formData = new FormData();
+    formData.append('profile_image', file);
+
+    fetch("{% url 'upload_profile_image' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+      },
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      profileImage.src = data.profile_image_url + '?t=' + new Date().getTime();
+
+      location.reload();
+
+      imageModalCheckbox.checked = false;
+      cropper.destroy();
+
+      saveButton.innerHTML = 'Salvar';
+      saveButton.disabled = false;
+    })
+    .catch(error => {
+      console.error("Erro ao salvar imagem:", error);
+      saveButton.innerHTML = 'Salvar';
+      saveButton.disabled = false;
+      alert('Erro ao salvar imagem, tente novamente!');
+    });
+  });
+});
+  </script>
+  
+  <script>
+    // Abrir modais
+    document.getElementById('open-change-name-modal').addEventListener('click', () => {
+      document.getElementById('modal-change-name').checked = true;
+    });
+  
+    document.getElementById('open-change-password-modal').addEventListener('click', () => {
+      document.getElementById('modal-change-password').checked = true;
+    });
+  
+    // Alterar nome AJAX
+    document.getElementById('form-change-name').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const nome = document.getElementById('novo-nome').value;
+
+    fetch("{% url 'change_name' %}", {
+        method: 'POST',
+        headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `nome=${encodeURIComponent(nome)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        const errorAlert = document.getElementById('name-error-alert');
+        const errorMsg = document.getElementById('name-error-message');
+
+        if (data.status === 'ok') {
+        document.querySelector('h2').innerText = data.novo_nome;
+        document.getElementById('modal-change-name').checked = false;
+        document.getElementById('form-change-name').reset();
+
+        showSuccessToast('Nome alterado com sucesso!');
+        } else if (data.message) {
+        errorMsg.innerText = data.message;
+        errorAlert.classList.remove('hidden');
+        }
+        });
+    });
+  
+    // Alterar senha AJAX
+    document.getElementById('form-change-password').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch("{% url 'change_password' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        const errorAlertPass = document.getElementById('password-error-alert');
+        const errorPass = document.getElementById('password-error-message');
+
+        if (data.status === 'ok') {
+        document.getElementById('modal-change-password').checked = false;
+        this.reset();
+        showSuccessToast('Senha alterada com sucesso!');
+        } else if (data.errors) {
+        // Pega a primeira mensagem de erro do objeto
+        const firstErrorField = Object.keys(data.errors)[0];
+        const firstErrorMsg = data.errors[firstErrorField][0];
+
+        errorPass.innerText = firstErrorMsg;
+        errorAlertPass.classList.remove('hidden');
+        }
+    });
+    });
+
+  </script>
+
+  <script>
+    function showSuccessToast(message) {
+    const toast = document.getElementById('alert-success');
+    const msg = document.getElementById('alert-success-msg');
+    msg.innerText = message;
+    toast.classList.remove('hidden');
+
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 4000);
+    }
+  </script>
+{% endblock %}

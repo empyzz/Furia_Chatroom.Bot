@@ -1,0 +1,24 @@
+{% extends 'main.html' %}
+{% load custom_filters %}
+{% block content %}
+<div class="max-w-md mx-auto mt-10">
+    <h2 class="text-xl font-bold mb-4">Criar nova sala</h2>
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+      <fieldset class="fieldset bg-base-200 border-base-300 rounded-box p-4">
+        <legend class="fieldset-legend text-lg font-semibold text-center">Detalhes da Sala</legend>
+        
+        <label for="id_name" class="label">Nome da Sala</label>
+        {{ form.name|add_class:"input input-bordered w-full" }}
+  
+        <label for="id_description" class="label">Descrição</label>
+        {{ form.description|add_class:"textarea textarea-bordered w-full" }}
+  
+        <label for="id_theme" class="label">Tema da Sala</label>
+        {{ form.theme }}
+  
+        <button type="submit" class="btn btn-success w-full mt-4">Criar Sala</button>
+      </fieldset>
+    </form>
+  </div>
+{% endblock %}

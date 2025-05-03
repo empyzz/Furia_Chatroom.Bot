@@ -1,0 +1,136 @@
+{% extends "main.html" %}
+{% load static %}
+{% load chat_tags %}
+
+
+
+  {% block content %}
+  <body class="bg-base-200 text-base-content">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-4 md:p-6">
+
+    <!-- Coluna da Lista de Usuários -->
+    <aside class="md:col-span-1 bg-base-200 p-4 rounded-box shadow-md">
+      <h3 class="text-lg font-bold mb-4">Usuários Online</h3>
+      <ul id="lista-usuarios-online" class="space-y-3">
+        {% for user in online_users %}
+          <li class="flex items-center gap-2 bg-base-100 p-2 rounded-lg shadow-sm">
+            <span class="status status-success status-m rounded-full animate-pulse"></span>
+            <span class="text-sm truncate">{{ user.username }}</span>
+          </li>
+        {% empty %}
+          <li class="text-gray-500">Ninguém online</li>
+        {% endfor %}
+      </ul>
+    </aside>
+
+    <!-- Coluna das Salas de Chat -->
+    <main class="md:col-span-3 space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <h2 class="text-2xl font-bold">Salas de Chat</h2>
+        <a href="{% url 'create_room' %}" class="btn btn-ghost w-full sm:w-auto">Criar nova sala</a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        {% for room in chat_rooms %}
+          <div class="card bg-base-100 shadow-md hover:shadow-xl transition h-full">
+            <div class="card-body flex flex-col justify-between space-y-2">
+              <h2 class="card-title text-lg sm:text-xl break-words">{{ room.name }}</h2>
+              <p class="text-sm text-base-content/80 sm:text-wrap break-words">{{ room.description|default:"Sala de conversa pública" }}</p>
+
+              <div class="flex flex-wrap justify-between items-center gap-2 mt-4 min-w-0">
+                {% badge_class room.theme as badge_color %}
+                <span class="badge text-sm px-3 py-1 h-6 flex items-center rounded-full max-w-full truncate overflow-hidden {{ badge_color }}">
+                  {{ room.get_theme_display }}
+                </span>
+
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  <a href="{% url 'chat_room' room.slug %}" class="btn btn-primary btn-sm w-full sm:w-auto whitespace-nowrap">Entrar</a>
+                  <form method="POST" action="{% url 'delete_chat_room' room.id %}" class="w-full sm:w-auto" onsubmit="return confirm('Tem certeza que deseja deletar esta sala?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-error btn-sm w-full sm:w-auto whitespace-nowrap">Deletar</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Divider -->
+      <div class="divider text-sm text-base-content">Chat com o Bot</div>
+
+      <!-- Card do Chat com o Bot -->
+      <div class="card bg-base-100 shadow-md hover:shadow-xl transition w-full max-w-md">
+        <div class="card-body">
+          <h2 class="card-title">Assistente Virtual</h2>
+          <p>Converse com nosso bot para perguntar sobre noticias e outras coisas envolvendo CS2.</p>
+          <div class="card-actions justify-end">
+            <a href="{% url 'bot_chat' %}" class="btn btn-accent btn-sm">Falar com o Bot</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+
+  {% if room %}
+  <script>
+    const chatSocket = new WebSocket(
+      (window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + '/ws/chat/{{ room.slug }}/'
+    );
+  
+    chatSocket.onopen = function(event) {
+      console.log('WebSocket conectado com sucesso!');
+    };
+  
+    chatSocket.onclose = function(event) {
+      console.log('WebSocket fechado:', event);
+    };
+  
+    chatSocket.onerror = function(event) {
+      console.error('Erro no WebSocket:', event);
+    };
+  </script>
+  {% endif %}
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const listaUsuarios = document.getElementById("lista-usuarios-online");
+  
+      function atualizarUsuariosOnline() {
+        fetch("/usuarios_online_json/")
+          .then(response => response.json())
+          .then(data => {
+            if (!listaUsuarios) return;
+  
+            const usuarios = data.online_users;
+            listaUsuarios.innerHTML = "";
+  
+            if (usuarios.length === 0) {
+              listaUsuarios.innerHTML = '<li class="text-gray-500">Ninguém online</li>';
+            } else {
+              usuarios.forEach(user => {
+                const li = document.createElement("li");
+                li.className = "flex items-center gap-2 bg-base-100 p-2 rounded-lg shadow-sm";
+                li.innerHTML = `
+                  <span class="status status-success status-m rounded-full animate-pulse"></span>
+                  <span class="text-sm truncate">${user.username}</span>
+                `;
+                listaUsuarios.appendChild(li);
+              });
+            }
+          })
+          .catch(error => {
+            console.error("Erro ao buscar usuários online:", error);
+          });
+      }
+  
+      atualizarUsuariosOnline();
+      setInterval(atualizarUsuariosOnline, 5000);
+    });
+  </script>
+  
+
+  </body>
+  {% endblock %}
+

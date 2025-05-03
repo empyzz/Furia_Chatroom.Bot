@@ -1,0 +1,173 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="flex flex-col p-4 min-h-[calc(100vh-4rem) overflow-y-none]">
+
+  <!-- Título Opcional -->
+  <h2 class="text-2xl font-bold mb-4">Assistente Virtual</h2>
+
+
+  <!-- Área de Mensagens -->
+  <div id="chat-messages" class="chat-box bg-base-200 p-4 rounded-md overflow-y-auto max-h-[60vh]">
+
+    {% if messages|length == 0 %}
+      <!-- Mensagem inicial só se não houver histórico -->
+      <div class="chat chat-start">
+        <div class="chat-image avatar">
+          <div class="w-10 rounded-full">
+            <img src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" class="w-full scale-75" alt="foto">
+          </div>
+        </div>
+        <div class="chat-header text-sm font-semibold">Bot</div>
+        <div class="chat-bubble bg-base-200 text-sm">
+          Fala Furioso, qual a sua duvida envolvendo CS? Selecione abaixo uma das perguntas
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Mensagens do chat -->
+    {% for message in messages %}
+      <div class="chat {% if message.is_bot %}chat-start{% else %}chat-end{% endif %}">
+        <div class="chat-image avatar">
+          <div class="w-10 rounded-full">
+            {% if message.is_bot %}
+              <img src="https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png" class="w-full scale-75" alt="foto">
+            {% else %}
+              <img src="{% if request.user.profile_image %}{{ request.user.profile_image.url }}{% else %}https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png{% endif %}"
+                class="{% if not request.user.profile_image %}w-full scale-75{% endif %}"
+                alt="foto">
+            {% endif %}
+          </div>
+        </div>
+        <div class="chat-header text-sm font-semibold">
+          {% if message.is_bot %}Bot{% else %}{{ request.user.username }}{% endif %}
+        </div>
+        <div class="chat-bubble bg-base-200 text-sm">
+          {{ message.text }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+
+  <!-- Campo de Mensagem -->
+  <div class="mt-4 flex">
+    <input id="chat-message-input" type="text"
+    class="input input-bordered w-full rounded-r-none"
+    placeholder="Escolha sua pergunta" autocomplete="off"
+    list="lista-perguntas">
+
+    <datalist id="lista-perguntas"></datalist>
+    <button id="chat-message-submit" class="btn rounded-l-none">Enviar</button>
+  </div>  
+
+
+</div>
+
+<script>
+  window.addEventListener('load', function () {
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('chat-message-input');
+  const submit = document.getElementById('chat-message-submit');
+
+  submit.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+
+    const formData = new FormData();
+    formData.append('text', text);
+
+    const response = await fetch("{% url 'bot_chat' %}", {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    });
+
+    if (response.ok) {
+      location.reload();
+    }
+  });
+
+  input.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submit.click();
+    }
+  });
+});
+</script>
+
+<!--dropdown-->
+
+<script>
+  const datalist = document.getElementById('lista-perguntas');
+  let perguntasValidas = [];
+
+  fetch("{% url 'autocomplete_perguntas' %}")
+    .then(res => res.json())
+    .then(data => {
+      perguntasValidas = data;
+      data.forEach(pergunta => {
+        const option = document.createElement('option');
+        option.value = pergunta;
+        datalist.appendChild(option);
+      });
+    });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('chat-message-input');
+    const submit = document.getElementById('chat-message-submit');
+
+    function enviarPergunta() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (!perguntasValidas.includes(text)) {
+        alert("Por favor, selecione uma pergunta válida da lista.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('text', text);
+
+      fetch("{% url 'bot_chat' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      }).then(response => {
+        if (response.ok) {
+          location.reload();
+        }
+      });
+    }
+
+    submit.addEventListener('click', (e) => {
+      e.preventDefault();
+      enviarPergunta();
+    });
+
+    input.addEventListener('keydown', function(e) {
+    if (!['ArrowDown', 'ArrowUp', 'Enter', 'Tab'].includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  window.addEventListener('pagehide', function (event) {
+  if (!event.persisted) {
+    navigator.sendBeacon("{% url 'limpar_chat' %}");
+  }
+});
+</script>
+
+{% endblock %}

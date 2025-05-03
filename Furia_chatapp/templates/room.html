@@ -1,0 +1,162 @@
+{% extends 'main.html' %}
+{% load chat_tags %}
+
+{% block content %}
+<div class="drawer md:drawer-open">
+  <input id="rooms-drawer" type="checkbox" class="drawer-toggle" />
+
+  <!-- Conteúdo principal -->
+  <div class="drawer-content flex flex-col min-h-[calc(100vh-4rem)]">
+
+    <!-- Botão para abrir drawer no mobile -->
+    <div class="md:hidden p-4">
+      <label for="rooms-drawer" class="btn btn-sm btn-outline">
+        Outras Salas
+      </label>
+    </div>
+
+    <!-- Chat Principal -->
+    <div class="flex-1 flex flex-col p-4 max-w-full">
+      <h2 class="text-2xl font-bold flex flex-wrap items-center gap-2">
+        Sala Atual: {{ room.name }}
+        {% badge_class room.theme as badge_color %}
+        <span class="badge text-sm h-6 px-3 flex items-center rounded-full {{ badge_color }}">
+          {{ room.get_theme_display }}
+        </span>
+      </h2>
+
+      <!-- Área de Mensagens -->
+      <div id="chat-messages"
+     class="chat-box mt-4 bg-base-200 p-4 overflow-y-auto rounded-md"
+     style="height: 400px;">
+        {% for message in messages %}
+          <div class="chat {% if message.user.id == request.user.id %}chat-end{% else %}chat-start{% endif %}">
+            <div class="chat-image avatar">
+              <div class="w-10 rounded-full">
+                <img src="{% if message.user.profile_image %}{{ message.user.profile_image.url }}{% else %}https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png{% endif %}"
+                     class="{% if not message.user.profile_image %}w-full scale-75{% endif %}"
+                     alt="foto">
+              </div>
+            </div>
+            <div class="chat-header text-sm font-semibold">
+              {{ message.user.username }}
+              <time class="text-xs opacity-50 ml-2">{{ message.timestamp|date:"H:i" }}</time>
+            </div>
+            <div class="chat-bubble bg-base-200 text-sm">
+              {{ message.content }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Campo de Mensagem -->
+      <div class="mt-4 flex">
+        <input id="chat-message-input" type="text"
+               class="input input-bordered w-full rounded-r-none"
+               placeholder="Digite sua mensagem..." autocomplete="off">
+        <button id="chat-message-submit" class="btn rounded-l-none">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar / Drawer -->
+  <div class="drawer-side">
+    <label for="rooms-drawer" class="drawer-overlay"></label>
+    <aside class="w-64 bg-base-300 border-r border-base-200 p-4 overflow-y-auto min-h-full">
+      <h3 class="text-xl font-bold mb-4 text-center text-base-content">Salas</h3>
+      <ul class="space-y-3">
+        {% for s in rooms %}
+          <li>
+            <a href="{% url 'chat_room' s.slug %}"
+               class="block px-4 py-3 rounded-lg transition duration-200 ease-in-out
+                      hover:scale-[1.05] hover:shadow-lg hover:brightness-135 border
+                      {% if s.slug == room.slug %}
+                        border-neutral ring-1 ring-base-content/10
+                      {% else %}
+                        bg-base-200 border-base-300 text-base-content
+                      {% endif %}">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-base-content opacity-70" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M17 8h2a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10a2 2 0 012-2h2M12 15v-6m0 0l-2 2m2-2l2 2"></path>
+                </svg>
+                <span class="truncate">{{ s.name }}</span>
+              </div>
+            </a>
+          </li>
+        {% empty %}
+          <li class="text-sm text-base-content text-center opacity-60">Nenhuma sala disponível.</li>
+        {% endfor %}
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<!-- Script WebSocket -->
+<script>
+  window.addEventListener('load', function () {
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+
+  const userId = "{{ request.user.id }}";
+  const chatSocket = new WebSocket(
+  (window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + '/ws/chat/{{ room.slug }}/'
+  );
+
+  chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    console.log(data);
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat ${data.user_id == userId ? 'chat-end' : 'chat-start'}`;
+    messageDiv.innerHTML = `
+      <div class="chat-image avatar">
+        <div class="w-10 rounded-full">
+          <img src="${data.profile_image || 'https://upload.wikimedia.org/wikipedia/pt/f/f9/Furia_Esports_logo.png'}" alt="foto">
+        </div>
+      </div>
+      <div class="chat-header text-sm font-semibold">
+        ${data.username}
+      <time class="text-xs opacity-50 ml-2">${data.timestamp} - ${data.data}</time>
+      </div>
+      <div class="chat-bubble bg-base-200 text-sm">
+        ${data.message}
+      </div>
+    `;
+    const messages = document.querySelector('#chat-messages');
+    messages.appendChild(messageDiv);
+    messages.scrollTop = messages.scrollHeight;
+  };
+
+  chatSocket.onclose = function (e) {
+    console.warn("WebSocket fechado:", e);
+  };
+
+  chatSocket.onerror = function (error) {
+    console.error("Erro no WebSocket:", error);
+  };
+
+  const chatInput = document.getElementById('chat-message-input');
+  const chatSubmit = document.getElementById('chat-message-submit');
+
+  chatSubmit.addEventListener('click', function () {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    if (chatSocket.readyState === WebSocket.OPEN) {
+      chatSocket.send(JSON.stringify({ 'message': message }));
+      chatInput.value = '';
+    } else {
+      console.error("WebSocket não está aberto.");
+    }
+  });
+
+  chatInput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      chatSubmit.click();
+    }
+  });
+</script>
+{% endblock %}

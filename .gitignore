@@ -1,0 +1,30 @@
+# Ambiente virtual
+venv/
+.env
+
+# Cache e arquivos temporários
+__pycache__/
+*.py[cod]
+*.log
+*.pot
+*.pyc
+*.pyo
+
+# Banco de dados local
+db.sqlite3
+
+# Diretórios Django gerados automaticamente
+/media/
+staticfiles/
+
+# VS Code / IDEs
+.vscode/
+.idea/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db

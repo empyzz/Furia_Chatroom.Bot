@@ -1,0 +1,117 @@
+{
+    "cs2_basico": [
+      {
+        "pergunta": "O que é Counter-Strike 2 e suas principais mudanças em relação ao CS:GO?",
+        "resposta": "Counter-Strike 2 (CS2) é a versão mais recente do jogo de tiro tático da Valve, lançado em 2023. Principais mudanças: motor Source 2, fumaças dinâmicas interativas, sistema de sub-tick para melhor responsividade, e gráficos significativamente melhorados."
+      },
+      {
+        "pergunta": "Quais são os modos de jogo e sistema de ranks no CS2?",
+        "resposta": "Modos disponíveis: Competitivo, Premier, Casual, Deathmatch, Wingman (2v2), Demolição e Retake. O sistema de ranks vai de Silver I até Global Elite (18 patentes), com classificação baseada em desempenho após 10 vitórias iniciais."
+      }
+    ],
+    
+    "cs2_competitivo": [
+      {
+        "pergunta": "Como funcionam os Majors e o cenário competitivo do CS2?",
+        "resposta": "Majors são os torneios mais importantes, ocorrendo 2 vezes/ano com premiação total de ~US$1.25 milhão. O cenário competitivo inclui ESL Pro League, IEM, BLAST Premier e torneios regionais."
+      },
+      {
+        "pergunta": "Qual a estrutura completa de um Major de CS2?",
+        "resposta": "Fases: 1) Classificatórias Regionais (RMRs), 2) Challengers, 3) Legends, 4) Champions. 24 times competem, com os melhores avançando. Vencedores recebem troféus e stickers exclusivos no jogo."
+      }
+    ],
+    
+    "cs2_gameplay": [
+      {
+        "pergunta": "Quais são os mapas oficiais e mecânicas de fumaça no CS2?",
+        "resposta": "Mapas atuais: Mirage, Inferno, Nuke, Overpass, Vertigo, Ancient e Anubis. Fumaças são volumétricas, interagem com ambiente e podem ser dissipadas por explosivos, criando novas estratégias."
+      },
+      {
+        "pergunta": "Quais são as diferenças entre armas e configurações recomendadas?",
+        "resposta": "AK-47 (T): mais dano ($2700). M4A4 (CT): mais precisa ($3100). Configurações populares: crosshair estático (style 4), cor verde/ciano, tamanho 2-3, gap -3 a -1. Sensibilidade profissional: 400-800 DPI com 0.8-1.5 in-game."
+      }
+    ],
+    
+    "furia_equipe": [
+    {
+        "pergunta": "Quem compõe o elenco atual da FURIA (2024) e sua história?",
+        "resposta": "Elenco titular: FalleN (IGL/AWP), KSCERATO, yuurih, molodoy (Ucrânia) e lvyekindar (Sérvia). Técnico: guerri. Fundada em 2017, a FURIA se destaca pelo estilo agressivo e pela primeira formação internacional em 2024, mantendo como maior conquista a semifinal no IEM Katowice 2020 e o título na ESL Pro League S13 NA."
+      },
+      {
+        "pergunta": "Quem são os novos jogadores internacionais da FURIA?",
+        "resposta": "molodoy (Ucrânia): entry fragger agressivo, ex-Monte. lvyekindar (Sérvia): lurker experiente, ex-Eternal Fire. A dupla traz novo estilo ao time, mantendo a identidade brasileira comandada por FalleN e KSCERATO."
+      },
+      {
+        "pergunta": "Quais são os próximos jogos e principais rivais da FURIA?",
+        "resposta": "Próximos jogos: PGL Astana 2025 contra o time The MongolZ. Rivais: MIBR (nacional), Team Liquid e Complexity (internacional). A equipe busca seu primeiro Major após chegar às quartas em Stockholm 2021."
+      }
+    ],
+    
+    "furia_jogadores": [
+      {
+        "pergunta": "Quais são os perfis detalhados dos jogadores da FURIA?",
+        "resposta": "FalleN: Lendário AWPer/IGL, líder da era de ouro brasileira. KSCERATO: Entry fragger preciso e consistente. yuurih: Agressivo com alta taxa de headshots. drop: Suporte versátil. chelo: Experiente em situações de clutch."
+      },
+      {
+        "pergunta": "Quem compõe o staff técnico da FURIA?",
+        "resposta": "Head Coach: guerri (ex-jogador, especialista em táticas). Assistant Coach: zakk (análise de demos). Juntos desenvolvem o estilo único de jogo da equipe desde 2019-2020."
+      }
+    ],
+    
+    "cs2_brasil": [
+      {
+        "pergunta": "Qual a história e situação atual do CS brasileiro?",
+        "resposta": "Pioneiros: cogu, KIKO (anos 2000). Era de ouro: Luminosity/SK (2016-2018) com 2 Majors. Atualmente: FURIA lidera, seguida por MIBR, paiN e Imperial. Únicos brasileiros com Major: FalleN, coldzera, fer, fnx e TACO."
+      }
+    ],
+    
+    "cs2_dicas": [
+      {
+        "pergunta": "Quais são as melhores dicas para melhorar no CS2?",
+        "resposta": "1) Treine aim em mapas como aim_botz, 2) Domine utilidades (smokes/molotovs), 3) Assista demos de profissionais, 4) Melhore posicionamento, 5) Use comandos como -tickrate 128 e fps_max 0, 6) Mantenha sensibilidade consistente (400-800 DPI, 0.8-1.5 in-game)."
+      }
+    ],
+    
+    "cs2_economia": [
+      {
+        "pergunta": "Como funciona o sistema econômico no CS2?",
+        "resposta": "Ganha-se dinheiro por: vitórias, derrotas consecutivas (bonus), eliminações e objetivos. Eco round: economizar para rounds futuros. Force buy: comprar sem economia ideal em rounds cruciais. Armamentos variam de $2700 (AK-47) a $3100 (M4A4)."
+      }
+    ],
+    
+    "cs2_avancado": [
+      {
+        "pergunta": "Quais são as técnicas avançadas e análise de demos no CS2?",
+        "resposta": "Técnicas: Bunny hopping, counter-strafing, shoulder peek. Analise demos focando em: posicionamento, decisões em clutch, uso de utilidades, rotações e heatmaps. Treine utilidades com mapas como 'yprac' ou 'crashz smoke trainer'."
+      }
+    ],
+  
+    "historia_competitiva": [
+      {
+        "pergunta": "Quais foram os times lendários e jogadores icônicos do CS?",
+        "resposta": "Times: NiP (87-0), Astralis (4 Majors), Luminosity/SK BR (2 Majors), Fnatic dominante. Jogadores: s1mple (habilidade excepcional), coldzera (2x melhor do mundo), GeT_RiGhT (pioneiro), olofmeister (versátil)."
+      },
+      {
+        "pergunta": "Quais foram os momentos mais icônicos do CS competitivo?",
+        "resposta": "1) 'olofboost' da Fnatic (2014), 2) 'coldzera jumping AWP' no Major 2016, 3) '1v5 clutch do s1mple' (2016), 4) Vitória brasileira no MLG Columbus 2016 contra todas as expectativas."
+      }
+    ],
+    
+    "meta_atual": [
+      {
+        "pergunta": "Qual é o meta atual do CS2 em 2024?",
+        "resposta": "1) Utilidades combinadas (fumaças dinâmicas), 2) Múltiplos AWPers, 3) Controle posicional de mapa, 4) Peeks agressivos com sub-tick. Armamentos em destaque: AK-47, M4A4, AWP, Deagle e MP9."
+      }
+    ],
+    
+    "informacao_extra":[
+        {
+            "pergunta": "Aonde posso achar mais informações sobre a Furia",
+            "resposta": "Pode acompanhar a FURIA nas suas redes sociais, ou acompanhar o time em sites como HLTV (https://www.hltv.org/team/8297/furia) , ou DRAFT5 (https://draft5.gg/equipe/330-FURIA), caso queria saber mais alguma coisa sobre a FURIA pode perguntar e tentarei responder"
+        },
+        {
+          "pergunta": "Qual a melhor organização do mundo",
+          "resposta": "É a FURIA, não tem como"
+        }
+    ]
+  }
