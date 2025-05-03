@@ -103,12 +103,18 @@ _Pagina para edição de perfil do usuário podendo mudar sua foto de perfil, no
     pip install -r requirements.txt
     ```
 
-4. **Configure o banco de dados PostgreSQL** e as variáveis de ambiente (`.env`).
+4. **Configure** e as variáveis de ambiente (`.env`).
 
 5. **Execute o servidor Django**
     ```bash
     python manage.py runserver
     ```
+    **OU**
+    ```bash
+    set DJANGO_SETTINGS_MODULE=Furia_chat.settings
+    daphne -p 8000 Furia_chat.asgi:application
+    ```
+    **Use o daphne para usar o chat, ja que é ele que abre o WEBSOCKET**
 
 6. **Inicie os WebSockets**
     ```bash

@@ -7,8 +7,14 @@ import traceback
 from django.utils import timezone 
 
 import locale
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')  
 
+try:
+    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+except locale.Error:
+    # Locale não suportado, segue com o padrão do sistema
+    print("pt_BR.UTF-8 não disponível, usando locale padrão.")
+    
+    
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_slug = self.scope['url_route']['kwargs']['slug']
