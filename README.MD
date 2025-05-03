@@ -57,11 +57,6 @@ Aqui estão as tecnologias usadas neste projeto:
 </table>
 
 
-
-
-
-
-
 ## Imagens do Projeto
 
 [![Tela de login](images/paglogin.png)](images/paglogin.png)  
@@ -79,6 +74,8 @@ _Criação de cards com nome, descrição e um tema específico para aquela sala
 [![Tela do bot](images/pagbot.png)](images/pagbot.png)  
 _Perguntas predefinidas para o usuário selecionar e o bot irá responder._
 
+[![Tela de perfil](images/pagperfil.png)](images/pagperfil.png)
+_Pagina para edição de perfil do usuário podendo mudar sua foto de perfil, nome, e alterar sua senha_
 
 
 ## 🚀 Como Rodar o Projeto
@@ -141,3 +138,4 @@ _Perguntas predefinidas para o usuário selecionar e o bot irá responder._
 <p>E em geral aprendi muitos conceitos novos sobre sistemas webs em geral com esse projeto.</p>
 <p>Dei uma chance para o TailwindCSS também e gostei muito de usar, facilitou em muito meu projeto</p>
 <p>Junto com o TailwindCSS usei o DaisyUI para componentes mais customizaveis e temas diferentes</p>
+<p>Para o chatbot queria ter usado alguma biblioteca como OpenIA para treinar um bot para responder as perguntas mas fiquei com medo de não dar tempo de realizar isso, então fui com um JSON com perguntas e respostas</p>
