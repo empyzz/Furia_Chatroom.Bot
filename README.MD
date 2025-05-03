@@ -101,12 +101,12 @@ _Pagina para edição de perfil do usuário podendo mudar sua foto de perfil, no
     cd Furia-ChatRooms
     ```
 
-3. **Instale as dependências**
+3. **Configure** o venv as variáveis de ambiente (`.env`) (`SECRET_KEY, DEBUG, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER`).
+
+4. **Instale as dependências**
     ```bash
     pip install -r requirements.txt
     ```
-
-4. **Configure** e as variáveis de ambiente (`.env`).
 
 5. **Execute o servidor Django**
     ```bash
