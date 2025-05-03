@@ -17,8 +17,7 @@
     <div class="bg-base-100 p-6 rounded-lg shadow-lg w-full max-w-lg">
       <div class="flex items-center space-x-4 mb-6">
         <div class="relative w-24 h-24">
-          <img id="profileImage" src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'defaultuser.png' %}{% endif %}" alt="Profile Image" onerror="this.onerror=null;this.src='{% static 'defaultuser.png' %}'">
-          class="w-full h-full rounded-full border-2 border-primary object-cover cursor-pointer" />
+          <img id="profileImage" src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'defaultuser.png' %}{% endif %}" alt="Profile Image" onerror="this.onerror=null;this.src='{% static 'defaultuser.png' %}'" class="w-full h-full rounded-full border-2 border-primary object-cover cursor-pointer" />
         </div>
 
         <div class="flex flex-col">
