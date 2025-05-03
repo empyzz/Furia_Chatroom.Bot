@@ -56,13 +56,12 @@
             <!-- Dropdown com avatar -->
             <div class="dropdown dropdown-end">
               <div tabindex="0" role="button" class="btn btn-circle avatar">
-                <div class="w-12 rounded-full" p-2>
-                  <img id="profileImage" 
-                  src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'defaultuser.png' %}{% endif %}" 
-                  alt="Foto de perfil" 
-                  onerror="this.onerror=null;this.src='{% static 'defaultuser.png' %}'" 
-                  class="w-full h-full rounded-full border-2 border-primary object-cover cursor-pointer" 
-                  style="width: 100%; scale: 0.75;">             
+                <div class="w-12 rounded-full">
+                  {% if user.profile_image %}
+                  <img src="{{ user.profile_image.url }}" alt="Foto de perfil">
+                  {% else %}
+                    <img src="{% static 'defaultuser.png' %}" alt="Foto padrão" style="width: 100%; scale: 0.75;">
+                  {% endif %}
                 </div>
               </div>
               <ul class="dropdown-content menu bg-base-200 rounded-box z-10 w-52 mt-2 p-2 shadow-lg">
